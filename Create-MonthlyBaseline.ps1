@@ -1,5 +1,8 @@
-$MonthstoKeepBaselines=5
+## Variables to Edit  ##
+$MonthstoKeepBaselines=5 
 $tenant = ""
+## End Editing ##
+
 $authority = "https://login.windows.net/$tenant"
 $AppId = Get-AutomationVariable -Name 'AppId'
 $AppSecret = Get-AutomationVariable -Name 'AppSecret'
@@ -16,7 +19,7 @@ Connect-MSGraph -ClientSecret $AppSecret -Quiet
 $baselines=Invoke-MSGraphRequest -HttpMethod GET -Url $uri
 $numberOfBaselines=$baselines.value.Count
 
-#Baselines cleanup
+## Baselines cleanup
 $monthstodelete=((get-date).AddMonths(-$MonthstoKeepBaselines)).ToString("yyyy-MM-dd")
 $uri = "https://graph.microsoft.com/$graphApiVersion/$($resource)?"+'$filter'+"=createdDateTime%20lt%20$monthstodelete"
 $baselinesToCleanUp=Invoke-MSGraphRequest -HttpMethod GET -Url $uri
@@ -26,7 +29,7 @@ $baselinesToCleanUp.value | foreach-object{
     Invoke-MSGraphRequest -HttpMethod DELETE -Url $deleteUri | Out-Null
 }
 
-#Check if the 100 limit is reached then delete oldest year baselines
+## Check if the 100 limit is reached then delete oldest year baselines
 if($numberOfBaselines -ge 88){
         $baselines.value | select-object -last 12 | foreach-object{
         $baselineID = $_.id
