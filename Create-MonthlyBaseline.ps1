@@ -2,7 +2,6 @@
 $MonthstoKeepBaselines=5 
 $tenant = ""
 ## End Editing ##
-
 $authority = "https://login.windows.net/$tenant"
 $AppId = Get-AutomationVariable -Name 'AppId'
 $AppSecret = Get-AutomationVariable -Name 'AppSecret'
@@ -11,11 +10,9 @@ $graphApiVersion = "Beta"
 $uri = "https://graph.microsoft.com/$graphApiVersion/$($resource)?"+'$orderby'+"=createdDateTime%20desc"
 $currentMonth= get-date -Format Y
 
-
 Update-MSGraphEnvironment -AppId $AppId -Quiet
 Update-MSGraphEnvironment -AuthUrl $authority -Quiet
 Connect-MSGraph -ClientSecret $AppSecret -Quiet
- 
 $baselines=Invoke-MSGraphRequest -HttpMethod GET -Url $uri
 $numberOfBaselines=$baselines.value.Count
 
