@@ -1,3 +1,5 @@
+##Query registry for Microsoft 365 Apps information##
+
 $M365Platofrm=(Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration' -ErrorAction SilentlyContinue).platform
 $M365Version=(Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration').ClientVersionToReport
 $M365Language=(Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration').ClientCulture
@@ -6,6 +8,7 @@ $M365ProductsInstalled=(Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Office\
 $M365UpdatesEnabled=(Get-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Office\ClickToRun\Configuration').UpdatesEnabled
 $M365DeviceName = $env:computername
 
+## Identidy the Update channel ##
 if($M365Version -gt $null){
     switch ($M365UpdateChannel)
 {
@@ -16,8 +19,13 @@ if($M365Version -gt $null){
     "http://officecdn.microsoft.com/pr/b8f9b850-328d-4355-9145-c59439a0c4cf" {$M365UpdateChannel="Semi-Annual Enterprise Channel (Preview)"}
     "http://officecdn.microsoft.com/pr/5440fd1f-7ecb-4221-8110-145efaa6372f" {$M365UpdateChannel="Beta Channel"}
 }
+
+## Build a JSON object with all information collected ##
 $OPPInformation=@{DeviceName=$M365DeviceName;Platform=$M365Platofrm;Version=$M365Version;Language=$M365Language;Channel=$M365UpdateChannel;ProductsInstalled=$M365ProductsInstalled;UpdatesEnabled=$M365UpdatesEnabled}
 $output=$OPPInformation | ConvertTo-Json -Compress
+
+## Display this information to the package output
+
 Write-Output $output
 Exit 0
 }else{
